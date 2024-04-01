@@ -54,8 +54,6 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
           setState(() {
             isAlertSet = true;
           });
-          // connectionStatus = 'No Internet Connection';
-          // Fluttertoast.showToast(msg: connectionStatus);
         } else if (result == ConnectivityResult.wifi) {
           connectionStatus = 'Connected to Wi-Fi';
           Fluttertoast.showToast(msg: connectionStatus);

@@ -7,7 +7,6 @@ import 'package:flutter_application_2/constractor/course.dart';
 import 'package:flutter_application_2/constractor/getSubjectCode.dart';
 import 'package:flutter_application_2/loadingpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_2/utils.dart';
 

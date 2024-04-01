@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -97,6 +98,70 @@ class _AddQuestionPaperState extends State<AddQuestionPaper> {
         );
       }
     } catch (e) {
+      print(e);
+      Fluttertoast.showToast(
+        gravity: ToastGravity.CENTER,
+        msg: e.toString(),
+      );
+    }
+  }
+
+  Future AddQuestionPaper(
+    String courseCode,
+    String subjectCode,
+    String semester,
+    File? question_paper,
+  ) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const LoadingDiologPage();
+      },
+    );
+    try {
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("${MyUrl.fullurl}add_question_paper.php"));
+
+      request.fields["course_code"] = courseCode;
+      request.fields["subject_code"] = subjectCode;
+      request.fields["semester"] = semester;
+
+      request.files.add(await http.MultipartFile.fromBytes(
+          "question_paper", question_paper!.readAsBytesSync(),
+          filename: question_paper.path.split("/").last));
+
+      var response = await request.send();
+      var responded = await http.Response.fromStream(response);
+      var jsondata = jsonDecode(responded.body);
+
+      if (jsondata['status'] == true) {
+        // ignore: use_build_context_synchronously
+        AwesomeDialog(
+          context: context,
+          dialogBackgroundColor: Colors.white,
+          animType: AnimType.leftSlide,
+          headerAnimationLoop: false,
+          dialogType: DialogType.success,
+          showCloseIcon: true,
+          title: 'Succes',
+          desc: 'question paper add successfull',
+          btnOkOnPress: () {
+            Navigator.pop(context);
+          },
+          btnOkIcon: Icons.check_circle,
+          onDismissCallback: (type) {},
+        ).show();
+
+        setState(() {});
+      } else {
+        Fluttertoast.showToast(
+          gravity: ToastGravity.CENTER,
+          msg: jsondata['msg'],
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
       Fluttertoast.showToast(
         gravity: ToastGravity.CENTER,
         msg: e.toString(),
@@ -118,6 +183,11 @@ class _AddQuestionPaperState extends State<AddQuestionPaper> {
     );
 
     super.initState();
+  }
+
+  void Dispose() {
+    PDFfile.clear();
+    super.dispose();
   }
 
   pickFile() async {
@@ -347,7 +417,22 @@ class _AddQuestionPaperState extends State<AddQuestionPaper> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              AddQuestionPaper(
+                      selectedCourse.toString(),
+                      selectedSubjectCode.toString(),
+                      selectSemester.toString(),
+                      pickedFile)
+                  .whenComplete(() {
+                selectedCourse = '';
+                selectSemester = '';
+                selectedSubjectCode = '';
+                SemesterList.clear();
+                concateList.clear();
+                subjectcode.clear();
+                PDFfile.clear();
+              });
+            },
             child: const Text(
               'Add',
               style: TextStyle(color: Colors.black),

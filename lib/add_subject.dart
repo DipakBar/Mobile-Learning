@@ -531,19 +531,19 @@ class _AddSubjectState extends State<AddSubject> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'course code: ${subjectList[index].course_code}',
+                                'Course code: ${subjectList[index].course_code}',
                                 style: const TextStyle(color: Colors.black),
                               ),
                               Text(
-                                'subject name: ${subjectList[index].subject_name}',
+                                'Subject name: ${subjectList[index].subject_name}',
                                 style: const TextStyle(color: Colors.black),
                               ),
                               Text(
-                                'subject code: ${subjectList[index].subject_code}',
+                                'Subject code: ${subjectList[index].subject_code}',
                                 style: const TextStyle(color: Colors.black),
                               ),
                               Text(
-                                'semester: ${subjectList[index].semester}',
+                                'Semester: ${subjectList[index].semester}',
                                 style: const TextStyle(color: Colors.black),
                               ),
                               Padding(
@@ -560,7 +560,7 @@ class _AddSubjectState extends State<AddSubject> {
                                         );
                                       },
                                       child: const Text(
-                                        "update",
+                                        "Update",
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),

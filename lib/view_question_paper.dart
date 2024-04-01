@@ -1,27 +1,24 @@
 import 'dart:io';
+import 'package:flutter_application_2/constractor/question_paper.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/DownloadProgressDialog.dart';
-import 'package:flutter_application_2/constractor/pdf.dart';
 import 'package:flutter_application_2/utils.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
 
-// ignore: must_be_immutable
-class PDFViewerPage extends StatefulWidget {
-  SubjectNodes nodes;
-  PDFViewerPage(this.nodes);
+class ViewYearlyQuestionPaper extends StatefulWidget {
+  QuestionPapers questionPapers;
+  ViewYearlyQuestionPaper(this.questionPapers);
 
   @override
-  _PDFViewerPageState createState() => _PDFViewerPageState(nodes);
+  State<ViewYearlyQuestionPaper> createState() =>
+      _ViewYearlyQuestionPaperState(questionPapers);
 }
 
-class _PDFViewerPageState extends State<PDFViewerPage> {
-  SubjectNodes nodes;
-  _PDFViewerPageState(this.nodes);
-  // final _flutterMediaDownloaderPlugin = MediaDownload();
+class _ViewYearlyQuestionPaperState extends State<ViewYearlyQuestionPaper> {
+  QuestionPapers questionPapers;
+  _ViewYearlyQuestionPaperState(this.questionPapers);
   String urlPDFPath = "";
   bool exists = true;
   int _totalPages = 0;
@@ -50,7 +47,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
 
   @override
   void initState() {
-    getFileFromUrl(MyUrl.fullurl + MyUrl.subjectnodes + nodes.pdf).then(
+    getFileFromUrl(MyUrl.fullurl +
+            MyUrl.questionpapers +
+            questionPapers.question_paper)
+        .then(
       (value) => {
         setState(() {
           urlPDFPath = value.path;
@@ -68,15 +68,15 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     if (loaded) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Subject nodes'),
+          title: Text('Question Paper'),
           actions: [
             IconButton(
                 onPressed: () async {
-                  showDialog(
-                      context: context,
-                      builder: (dialogcontext) {
-                        return DownloadProgressDialog(nodes);
-                      });
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (dialogcontext) {
+                  //       return DownloadProgressDialog(nodes);
+                  //     });
                 },
                 icon: Icon(Icons.downloading_sharp))
           ],
