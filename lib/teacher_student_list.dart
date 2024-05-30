@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_application_2/constractor/allStudentDetails.dart';
 import 'package:flutter_application_2/teacher_show_student.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -22,7 +23,6 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
   TextEditingController Searchbar = TextEditingController();
   List<allStudentDetais> studentlist = [];
   List<allStudentDetais> searchcontact = [];
-  // List<allStudentDetais> priority = [];
 
   void FilterItem(String query) {
     query = query.toLowerCase();
@@ -47,16 +47,17 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
       builder: (context) => AlertDialog(
         content: Container(
           decoration: BoxDecoration(
-              image: image != 'no image'
-                  ? DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                          MyUrl.fullurl + MyUrl.Studentimageurl + image))
-                  : DecorationImage(
-                      image: AssetImage(
+            image: image != 'no image'
+                ? DecorationImage(
+                    image: CachedNetworkImageProvider(
+                        MyUrl.fullurl + MyUrl.Studentimageurl + image))
+                : const DecorationImage(
+                    image: AssetImage(
                       "assets/images/default.png",
-                    )),
-              borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+            borderRadius: BorderRadius.circular(30),
+          ),
           height: 250,
         ),
       ),
@@ -113,36 +114,82 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(
-                      color: Colors.white,
-                    ),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 2),
-                  child: TextFormField(
-                    style: TextStyle(color: Colors.white),
-                    controller: Searchbar,
-                    onChanged: (value) {
-                      setState(() {
-                        isopen = true;
-                        notopen = false;
-                      });
-                      return FilterItem(value);
+            Container(
+              height: 250,
+              padding: const EdgeInsets.only(
+                  top: 20, bottom: 10, right: 15, left: 15),
+              decoration: const BoxDecoration(
+                color: Colors.lightBlue,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(70),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search, color: Colors.white),
-                      suffixIcon: InkWell(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Theme.of(context).colorScheme.background,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Students',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.background,
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 5, bottom: 20),
+                    width: MediaQuery.of(context).size.width,
+                    height: 55,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextFormField(
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                      controller: Searchbar,
+                      onChanged: (value) {
+                        setState(() {
+                          isopen = true;
+                          notopen = false;
+                        });
+                        return FilterItem(value);
+                      },
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Search Here...',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.5)),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.5),
+                        ),
+                        suffixIcon: InkWell(
                           onTap: () {
                             setState(
                               () {
@@ -152,17 +199,19 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                               },
                             );
                           },
-                          child: Icon(Icons.clear, color: Colors.white)),
-                      border: InputBorder.none,
-                      hintText: 'Serach',
-                      hintStyle: TextStyle(color: Colors.white),
+                          child: Icon(
+                            Icons.clear,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.5),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  )
+                ],
               ),
-            ),
-            const SizedBox(
-              height: 10,
             ),
             if (isopen == true)
               Expanded(
@@ -170,16 +219,16 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                     ? Container(
                         padding: const EdgeInsets.only(top: 2),
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(45),
                             topRight: Radius.circular(45),
                           ),
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.background,
                         ),
                         child: Container(
                           padding: const EdgeInsets.only(
-                              left: 15, top: 20, right: 15),
+                              left: 15, top: 10, right: 15),
                           child: ListView.builder(
                             itemCount: searchcontact.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -199,20 +248,48 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
                                       border: Border.all(
-                                        color: Colors.white,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .background,
                                       ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: ListTile(
                                       title: Text(
                                         searchcontact[index].name,
-                                        style: TextStyle(color: Colors.black),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
                                       ),
                                       subtitle: Text(
                                         searchcontact[index].course,
-                                        style: TextStyle(color: Colors.black),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                      ),
+                                      trailing: IconButton(
+                                        onPressed: () async {
+                                          String number =
+                                              searchcontact[index].mobile;
+                                          await FlutterPhoneDirectCaller
+                                              .callNumber(
+                                            number.toString(),
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.call,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
                                       ),
                                       leading: InkWell(
                                         onTap: () {
@@ -220,17 +297,38 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                                         },
                                         child: searchcontact[index].image !=
                                                 'no image'
-                                            ? CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                  MyUrl.fullurl +
-                                                      MyUrl.Studentimageurl +
-                                                      searchcontact[index]
-                                                          .image,
+                                            ? CachedNetworkImage(
+                                                imageUrl: MyUrl.fullurl +
+                                                    MyUrl.Studentimageurl +
+                                                    searchcontact[index].image,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  height: 40,
+                                                  width: 40,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            90),
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
                                                 ),
+                                                placeholder: (context, url) =>
+                                                    const CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
                                               )
-                                            : const CircleAvatar(
-                                                backgroundColor: Colors.black,
-                                                backgroundImage: AssetImage(
+                                            : CircleAvatar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .background,
+                                                backgroundImage:
+                                                    const AssetImage(
                                                   "assets/images/default.png",
                                                 ),
                                               ),
@@ -246,11 +344,11 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                     : Container(
                         padding: const EdgeInsets.only(top: 2),
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(45),
                               topRight: Radius.circular(45)),
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.background,
                         ),
                         child: Center(
                           child: LottieBuilder.asset(
@@ -269,15 +367,15 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                     ? Container(
                         padding: const EdgeInsets.only(top: 2),
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(45),
                               topRight: Radius.circular(45)),
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.background,
                         ),
                         child: Container(
                           padding: const EdgeInsets.only(
-                              left: 15, top: 20, right: 15),
+                              left: 15, top: 10, right: 15),
                           child: ListView.builder(
                             itemCount: studentlist.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -297,20 +395,32 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
                                         border: Border.all(
-                                          color: Colors.white,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
                                         ),
                                         borderRadius:
                                             BorderRadius.circular(12)),
                                     child: ListTile(
                                       title: Text(
                                         studentlist[index].name,
-                                        style: TextStyle(color: Colors.black),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
                                       ),
                                       subtitle: Text(
                                         studentlist[index].course,
-                                        style: TextStyle(color: Colors.black),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
                                       ),
                                       leading: InkWell(
                                         onTap: () {
@@ -318,16 +428,38 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                                         },
                                         child: studentlist[index].image !=
                                                 'no image'
-                                            ? CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                  MyUrl.fullurl +
-                                                      MyUrl.Studentimageurl +
-                                                      studentlist[index].image,
+                                            ? CachedNetworkImage(
+                                                imageUrl: MyUrl.fullurl +
+                                                    MyUrl.Studentimageurl +
+                                                    studentlist[index].image,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  height: 40,
+                                                  width: 40,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            90),
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
                                                 ),
+                                                placeholder: (context, url) =>
+                                                    const CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
                                               )
-                                            : const CircleAvatar(
-                                                backgroundColor: Colors.black,
-                                                backgroundImage: AssetImage(
+                                            : CircleAvatar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .background,
+                                                backgroundImage:
+                                                    const AssetImage(
                                                   "assets/images/default.png",
                                                 ),
                                               ),
@@ -341,9 +473,11 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                                             number.toString(),
                                           );
                                         },
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.call,
-                                          color: Colors.white,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
                                         ),
                                       ),
                                     ),
@@ -357,34 +491,40 @@ class _TeacherStudentListState extends State<TeacherStudentList> {
                     : Container(
                         padding: const EdgeInsets.only(top: 2),
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(45),
-                              topRight: Radius.circular(45)),
-                          color: Colors.black,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45),
+                          ),
+                          color: Theme.of(context).colorScheme.background,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SpinKitFadingCircle(
-                                color: Colors.white,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                                 size: 90,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 "Loading....",
                                 style: TextStyle(
-                                    fontSize: 12, color: Colors.white),
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                               )
                             ],
                           ),
                         ),
                       ),
-              ),
+              )
           ],
         ),
       ),

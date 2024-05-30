@@ -16,12 +16,12 @@ class LoadingDiologPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             height: 150,
             width: 150,
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SpinKitFadingCircle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onBackground,
                   size: 90,
                 ),
                 SizedBox(
@@ -29,7 +29,10 @@ class LoadingDiologPage extends StatelessWidget {
                 ),
                 Text(
                   "Loading....",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 )
               ],
             ),

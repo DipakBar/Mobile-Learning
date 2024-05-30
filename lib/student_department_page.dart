@@ -1,21 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_2/Student_setting_screen.dart';
-import 'package:flutter_application_2/constractor/getsemester.dart';
 import 'package:flutter_application_2/constractor/studentdetails.dart';
 import 'package:flutter_application_2/overloading_screen.dart';
-import 'package:flutter_application_2/student_bottom_navigation_bar.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_application_2/student_subject_page.dart';
 import 'package:flutter_application_2/student_deshboard.dart';
 import 'package:flutter_application_2/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/single_child_widget.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
@@ -41,13 +42,28 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
   double xOffset = 0;
   double yOffset = 0;
   bool isDrawerOpen = false;
-  String coursecode = '';
-  List<getSemester> Semester = [];
+  List<String> Semester = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+  Future<void> _checkInternetConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        showDiaLogBox();
+        setState(() {
+          isAlertSet = true;
+        });
+      });
+    } else {
+      setState(() {});
+    }
+  }
+
   startMonitoringConnectivity() {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
       isDeviceConnected = await InternetConnectionChecker().hasConnection;
+
       setState(() {
         if (result == ConnectivityResult.none) {
           showDiaLogBox();
@@ -55,68 +71,21 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
             isAlertSet = true;
           });
         } else if (result == ConnectivityResult.wifi) {
-          connectionStatus = 'Connected to Wi-Fi';
-          Fluttertoast.showToast(msg: connectionStatus);
-        } else if (result == ConnectivityResult.mobile) {
-          connectionStatus = 'Connected to Mobile Data';
-          Fluttertoast.showToast(msg: connectionStatus);
-        }
+        } else if (result == ConnectivityResult.mobile) {}
       });
     });
     return connectionStatus;
-  }
-
-  Future getsemester(
-    String course_code,
-  ) async {
-    Map data = {'course_code': coursecode};
-    try {
-      var res = await http.post(
-          // ignore: prefer_interpolation_to_compose_strings
-          Uri.http(MyUrl.mainurl, MyUrl.suburl + "get_semester.php"),
-          body: data);
-      var jsondata = jsonDecode(res.body);
-      if (jsondata['status'] == true) {
-        Semester.clear();
-
-        for (int i = 0; i < jsondata["data"].length; i++) {
-          getSemester semcode = getSemester(
-            semester: jsondata["data"][i]["semester"].toString(),
-          );
-          setState(() {
-            Semester.add(semcode);
-          });
-        }
-      } else {
-        Navigator.pop(context);
-
-        Fluttertoast.showToast(
-          gravity: ToastGravity.CENTER,
-          msg: jsondata['msg'],
-        );
-      }
-    } catch (e) {
-      print(e);
-      Fluttertoast.showToast(
-        gravity: ToastGravity.CENTER,
-        msg: e.toString(),
-      );
-    }
   }
 
   void stopMonitoringConnectivity() {
     subscription.cancel();
   }
 
-  getcoursecode() {
-    coursecode = details.course.substring(
-        details.course.indexOf("(") + 1, details.course.indexOf(")"));
-  }
-
   @override
   void initState() {
-    getcoursecode();
-    getsemester(coursecode);
+    // getcoursecode();
+    _checkInternetConnection();
+
     startMonitoringConnectivity();
 
     super.initState();
@@ -130,13 +99,12 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            color: Colors.blueGrey,
+            decoration:
+                BoxDecoration(color: Theme.of(context).colorScheme.background),
             child: Padding(
               padding: const EdgeInsets.only(top: 50, left: 20, bottom: 70),
               child: Column(
@@ -146,7 +114,8 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                       details.image == 'no image'
                           ? CircleAvatar(
                               // radius: 50.0,
-                              backgroundColor: Colors.black,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.onBackground,
                               child: Image.asset(
                                 "assets/images/default.png",
                                 height: 50,
@@ -154,6 +123,7 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                               ),
                             )
                           : CachedNetworkImage(
+                              color: Theme.of(context).colorScheme.onBackground,
                               imageUrl: MyUrl.fullurl +
                                   MyUrl.Studentimageurl +
                                   details.image,
@@ -179,10 +149,10 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                       ),
                       Text(
                         details.name,
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                            fontStyle: FontStyle.italic),
                       ),
                     ],
                   ),
@@ -202,39 +172,23 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                                     builder: (context) =>
                                         StudentDeshboard(details)));
                           },
-                          child: const Row(
+                          child: Row(
                             children: <Widget>[
                               Icon(
                                 Icons.account_circle,
-                                color: Colors.white,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 'Profile',
-                                style: TextStyle(color: Colors.white),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: const Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.share,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Share',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                               )
                             ],
                           ),
@@ -250,18 +204,23 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                                     builder: (context) =>
                                         StudentSettingScrren(details)));
                           },
-                          child: const Row(
+                          child: Row(
                             children: <Widget>[
                               Icon(
                                 Icons.settings,
-                                color: Colors.white,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                               ),
                               SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 'Setting',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                               )
                             ],
                           ),
@@ -273,18 +232,25 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                           onTap: () {
                             AwesomeDialog(
                               context: context,
-                              dialogBackgroundColor: Colors.white,
+                              dialogBackgroundColor:
+                                  Theme.of(context).colorScheme.background,
                               dialogType: DialogType.warning,
                               headerAnimationLoop: false,
                               animType: AnimType.bottomSlide,
                               title: 'Log Out',
-                              titleTextStyle:
-                                  const TextStyle(color: Colors.black),
+                              titleTextStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
                               desc: 'Do you want to logout?',
-                              descTextStyle:
-                                  const TextStyle(color: Colors.black),
-                              buttonsTextStyle:
-                                  const TextStyle(color: Colors.black),
+                              descTextStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                              buttonsTextStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
                               showCloseIcon: false,
                               btnCancelOnPress: () {},
                               btnOkOnPress: () async {
@@ -301,18 +267,23 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                               },
                             ).show();
                           },
-                          child: const Row(
+                          child: Row(
                             children: <Widget>[
                               Icon(
                                 Icons.cancel,
-                                color: Colors.white,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                               ),
                               SizedBox(
                                 width: 10,
                               ),
                               Text(
-                                'Log out',
-                                style: TextStyle(color: Colors.white),
+                                'Logout',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                               )
                             ],
                           ),
@@ -330,149 +301,96 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
               ..scale(isDrawerOpen ? 0.85 : 1.00)
               ..rotateZ(isDrawerOpen ? -50 : 0),
             duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: Colors.indigo,
-              borderRadius: isDrawerOpen
-                  ? BorderRadius.circular(40)
-                  : BorderRadius.circular(0),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        isDrawerOpen
-                            ? GestureDetector(
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
+            child: Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              body: Stack(
+                children: [
+                  Positioned(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 150,
+                          decoration: const BoxDecoration(
+                            color: Colors.lightBlue,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(130),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              AppBar(
+                                backgroundColor: Colors.transparent,
+                                leading: isDrawerOpen
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            xOffset = 0;
+                                            yOffset = 0;
+                                            isDrawerOpen = false;
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_back_ios,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                      )
+                                    : InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            xOffset = 290;
+                                            yOffset = 80;
+                                            isDrawerOpen = true;
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.menu,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        ),
+                                      ),
+                                title: Text(
+                                  'Select semester',
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background,
+                                  ),
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    xOffset = 0;
-                                    yOffset = 0;
-                                    isDrawerOpen = false;
-                                  });
-                                },
                               )
-                            : GestureDetector(
-                                child: Icon(
-                                  Icons.menu,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    xOffset = 290;
-                                    yOffset = 80;
-                                    isDrawerOpen = true;
-                                  });
-                                },
-                              ),
-                        Text(
-                          'SELECT DEPARTMENT',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              decoration: TextDecoration.none),
-                        ),
-                        Container(),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.background,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30))),
-                        height: height,
-                        width: width,
-                        child: Semester.isNotEmpty
-                            ? GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 20,
-                                  childAspectRatio: 1.1,
-                                ),
-                                itemCount: Semester.length,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const StudentBottomNavigationBar(),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 20),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onBackground,
-                                          boxShadow: const [
-                                            BoxShadow(
-                                                color: Colors.black26,
-                                                spreadRadius: 1,
-                                                blurRadius: 6)
-                                          ]),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'SEMISTER ${Semester[index].semester}',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .background,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SpinKitFadingCircle(
-                                    color: Colors.black,
-                                    size: 90,
+                  Padding(
+                      padding: const EdgeInsets.only(top: 150),
+                      child: GridView.builder(
+                          itemCount: 8,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 12.0,
+                            mainAxisSpacing: 15.0,
+                          ),
+                          itemBuilder: (context, index) {
+                            return SemesterTile(
+                              semester: 'Semester ${index + 1}',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StudentSubjectPage(
+                                        semester: (index + 1).toString()),
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Loading....",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  )
-                                ],
-                              ),
-                      )
-                    ],
-                  )
+                                );
+                              },
+                            );
+                          }))
                 ],
               ),
             ),
@@ -506,4 +424,63 @@ class _StudentDepartmentScreenState extends State<StudentDepartmentScreen> {
                   child: const Text('ok')),
             ],
           ));
+}
+
+class SemesterTile extends StatelessWidget {
+  final String semester;
+  final VoidCallback onTap;
+
+  const SemesterTile({required this.semester, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(left: 5, right: 5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(color: Colors.grey, blurRadius: 20, spreadRadius: 0.5),
+            BoxShadow(color: Colors.white, blurRadius: 0, spreadRadius: 3.0)
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey, blurRadius: 20, spreadRadius: 0.5),
+                  BoxShadow(
+                      color: Colors.white, blurRadius: 0, spreadRadius: 3.0)
+                ],
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(
+                  Icons.school,
+                  size: 30,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              semester,
+              style: TextStyle(color: Colors.black),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

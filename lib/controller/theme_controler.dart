@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/config/colors.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeController extends GetxController {
@@ -19,7 +20,7 @@ class ThemeController extends GetxController {
 
   final ThemeData lightTheme = ThemeData(
       brightness: Brightness.light,
-      primarySwatch: Colors.deepPurple,
+      // primarySwatch: Colors.deepPurple,
       useMaterial3: true,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.deepPurple,
@@ -47,7 +48,7 @@ class ThemeController extends GetxController {
 
   final ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
-      primarySwatch: Colors.deepOrange,
+      // primarySwatch: Colors.deepOrange,
       useMaterial3: true,
       scaffoldBackgroundColor: darkBgColor,
       appBarTheme: const AppBarTheme(
@@ -97,7 +98,9 @@ class ThemeController extends GetxController {
     }
     if (themeNamesf == 'dark') {
       Get.changeThemeMode(ThemeMode.dark);
+      isDark = false.obs;
     } else if (themeNamesf == 'light') {
+      isDark = true.obs;
       Get.changeThemeMode(ThemeMode.light);
     }
   }

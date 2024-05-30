@@ -1,8 +1,13 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_2/constractor/teacherDetails.dart';
 import 'package:flutter_application_2/loadingpage.dart';
 import 'package:flutter_application_2/teacher_home_page.dart';
@@ -35,14 +40,19 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
         content: Container(
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
           height: 180,
           child: Column(
             children: [
-              const Text(
+              Text(
                 "Pic Image From",
-                style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
               TextButton.icon(
                 onPressed: () {
@@ -51,13 +61,15 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                     UpdateImage(pickedImage!, tdetails.email);
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.camera,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
-                label: const Text(
+                label: Text(
                   "CAMERA",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
               TextButton.icon(
@@ -67,26 +79,30 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                     UpdateImage(pickedImage!, tdetails.email);
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.image,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
-                label: const Text(
+                label: Text(
                   "GALLERY",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
               TextButton.icon(
                 onPressed: () {
                   Get.back();
                 },
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.black,
+                icon: Icon(
+                  Icons.cancel,
+                  color: Theme.of(context).colorScheme.onError,
                 ),
-                label: const Text(
+                label: Text(
                   "CANCEL",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
                 ),
               ),
             ],
@@ -233,12 +249,109 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
         MaterialPageRoute(builder: (context) => TeacherHomeScreen(tdetails)));
   }
 
+  Widget imageShow(String image) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  maxRadius: 150,
+                  child: ClipOval(
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                      color: Colors.grey[200], // Placeholder background color
+                    ),
+                  ),
+                ),
+                Positioned(
+                  child: CircularProgressIndicator(),
+                ),
+                CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  maxRadius: 150,
+                  foregroundImage: NetworkImage(
+                    MyUrl.fullurl + MyUrl.Teacherimageurl + image,
+                  ),
+                  onForegroundImageError: (exception, stackTrace) {
+                    // Handle error here if needed
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget imageShow(image) {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       Navigator.pop(context);
+  //       Navigator.pop(context);
+  //     },
+  //     child: BackdropFilter(
+  //       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+  //       child: Container(
+  //         color: Colors.transparent,
+  //         child: Center(
+  //           child: CircleAvatar(
+  //             backgroundColor: Colors.transparent,
+  //             maxRadius: 150,
+  //             foregroundImage: NetworkImage(
+  //               MyUrl.fullurl + MyUrl.Teacherimageurl + image,
+  //             ),
+  //             onForegroundImageError: (exception, stackTrace) {
+  //               CircularProgressIndicator();
+  //             },
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget defalut() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+          child: const Center(
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              maxRadius: 150,
+              foregroundImage: AssetImage(
+                "assets/images/default.png",
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => getData(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.lightBlue,
         body: SafeArea(
           child: Column(
             children: [
@@ -249,13 +362,19 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       onPressed: () {
                         getData();
                       },
-                      icon: const Icon(Icons.arrow_back_ios)),
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Theme.of(context).colorScheme.background,
+                      )),
                   Container(
                     height: 60,
-                    child: const Center(
+                    child: Center(
                         child: Text(
-                      'PROFILE  INFO',
-                      style: TextStyle(fontSize: 25),
+                      'PROFILE',
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Theme.of(context).colorScheme.background,
+                      ),
                     )),
                   ),
                   const SizedBox(
@@ -267,11 +386,11 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                 child: Container(
                   padding: const EdgeInsets.only(top: 25),
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(45),
                         topRight: Radius.circular(45)),
-                    color: Colors.black,
+                    color: Theme.of(context).colorScheme.background,
                   ),
                   child: Container(
                     padding:
@@ -280,110 +399,252 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       Center(
                         child: Stack(
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.blueAccent, width: 5),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(100),
-                                ),
-                              ),
-                              child: pickedImage != null
-                                  ? ClipOval(
-                                      child: Image.file(
-                                        pickedImage!,
-                                        height: 150,
-                                        width: 160,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : tdetails.image == 'no image'
-                                      ? CircleAvatar(
-                                          radius: 70.0,
-                                          backgroundColor: Colors.black,
-                                          child: Image.asset(
-                                            "assets/images/default.png",
-                                            height: 150,
-                                            width: 160,
-                                          ),
-                                        )
-                                      : CircleAvatar(
-                                          radius: 70.0,
-                                          backgroundImage: NetworkImage(
-                                            MyUrl.fullurl +
-                                                MyUrl.Teacherimageurl +
-                                                tdetails.image,
+                            GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.background,
+                                  context: context,
+                                  builder: ((context) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: ListTile(
+                                            leading: Icon(
+                                              Icons.cancel,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError,
+                                            ),
+                                            title: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onError),
+                                            ),
                                           ),
                                         ),
+                                        InkWell(
+                                          onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return tdetails.image ==
+                                                          'no image'
+                                                      ? defalut()
+                                                      : imageShow(
+                                                          tdetails.image);
+                                                });
+                                          },
+                                          child: ListTile(
+                                            leading: Icon(
+                                              Icons.person,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                            ),
+                                            title: Text(
+                                              'See profile picture',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground),
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: imagePickerOption,
+                                          child: ListTile(
+                                            leading: Icon(
+                                              Icons.image_sharp,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                            ),
+                                            title: Text(
+                                              'Choose profile picture',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onBackground,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                                );
+                              },
+                              child: Container(
+                                height: 150,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.lightBlue, width: 5),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(100),
+                                  ),
+                                ),
+                                child: pickedImage != null
+                                    ? ClipOval(
+                                        child: Image.file(
+                                          pickedImage!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : tdetails.image == 'no image'
+                                        ? CircleAvatar(
+                                            radius: 70.0,
+                                            backgroundColor: Colors.black,
+                                            child: Image.asset(
+                                              "assets/images/default.png",
+                                              // height: 150,
+                                              // width: 160,
+                                            ),
+                                          )
+                                        : CachedNetworkImage(
+                                            imageUrl: MyUrl.fullurl +
+                                                MyUrl.Teacherimageurl +
+                                                tdetails.image,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              // height: 130,
+                                              // width: 130,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(90),
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                const CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                              ),
                             ),
                             Positioned(
-                                bottom: 1,
-                                right: 1,
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  // ignore: sort_child_properties_last
-                                  child: IconButton(
-                                    onPressed: () {
-                                      showModalBottomSheet(
-                                          context: context,
-                                          builder: ((context) {
-                                            return Container(
-                                              height: 150,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      TextButton(
-                                                          onPressed: () {},
-                                                          child: const Text(
-                                                            "Wiew profile image",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic),
-                                                          )),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      TextButton(
-                                                          onPressed:
-                                                              imagePickerOption,
-                                                          child: const Text(
-                                                            "Edit profile image",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic),
-                                                          ))
-                                                    ],
-                                                  ),
-                                                ],
+                              bottom: 1,
+                              right: 1,
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                // ignore: sort_child_properties_last
+                                child: IconButton(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      context: context,
+                                      builder: ((context) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: ListTile(
+                                                leading: Icon(
+                                                  Icons.cancel,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onError,
+                                                ),
+                                                title: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onError),
+                                                ),
                                               ),
-                                            );
-                                          }));
-                                    },
-                                    icon: const Icon(
-                                      Icons.add_a_photo,
-                                      color: Colors.white,
-                                    ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return tdetails.image ==
+                                                              'no image'
+                                                          ? defalut()
+                                                          : imageShow(
+                                                              tdetails.image);
+                                                    });
+                                              },
+                                              child: ListTile(
+                                                leading: Icon(
+                                                  Icons.person,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground,
+                                                ),
+                                                title: Text(
+                                                  'See profile picture',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onBackground),
+                                                ),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: imagePickerOption,
+                                              child: ListTile(
+                                                leading: Icon(
+                                                  Icons.image_sharp,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground,
+                                                ),
+                                                title: Text(
+                                                  'Choose profile picture',
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.add_a_photo,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background,
                                   ),
-                                  decoration: const BoxDecoration(
-                                      color: Colors.amber,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                ))
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -392,7 +653,7 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -402,9 +663,22 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                   blurRadius: 8)
                             ]),
                         child: ListTile(
-                          title: const Text("name"),
-                          subtitle: Text(tdetails.name),
-                          leading: const Icon(Icons.person),
+                          title: Text(
+                            "name",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tdetails.name,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                           trailing: IconButton(
                             onPressed: () {
                               name.text = tdetails.name;
@@ -413,7 +687,17 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                   builder: (context) {
                                     return Container(
                                       child: AlertDialog(
-                                        title: const Text("Enter your name"),
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                        title: Text(
+                                          "Enter your name",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                          ),
+                                        ),
                                         content: Form(
                                           key: namekey,
                                           child: TextFormField(
@@ -428,7 +712,28 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                               }
                                               return null;
                                             },
-                                            decoration: const InputDecoration(),
+                                            decoration: InputDecoration(
+                                                errorStyle: const TextStyle(
+                                                    color: Colors.red),
+                                                labelStyle: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground,
+                                                ),
+                                                border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    borderSide: BorderSide(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onBackground,
+                                                    )),
+                                                hintStyle: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground,
+                                                )),
                                           ),
                                         ),
                                         actions: [
@@ -466,7 +771,10 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                     );
                                   });
                             },
-                            icon: const Icon(Icons.edit),
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
                           ),
                         ),
                       ),
@@ -475,7 +783,7 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -485,9 +793,22 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                   blurRadius: 8)
                             ]),
                         child: ListTile(
-                          title: const Text("Email"),
-                          subtitle: Text(tdetails.email),
-                          leading: Icon(Icons.email_rounded),
+                          title: Text(
+                            "Email",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tdetails.email,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.email_rounded,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -495,7 +816,7 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -505,9 +826,22 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                   blurRadius: 8)
                             ]),
                         child: ListTile(
-                          title: const Text("Password"),
-                          subtitle: Text(tdetails.pass),
-                          leading: const Icon(Icons.lock),
+                          title: Text(
+                            "Password",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tdetails.pass,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.lock,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -515,7 +849,7 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -525,19 +859,24 @@ class _TeacherDeshbordState extends State<TeacherDeshbord> {
                                   blurRadius: 8)
                             ]),
                         child: ListTile(
-                          leading: const Icon(Icons.phone_android),
-                          title: const Text("Mobile no."),
-                          subtitle: Text(tdetails.mobile),
+                          leading: Icon(
+                            Icons.phone_android,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                          title: Text(
+                            "Mobile no.",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tdetails.mobile,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Center(
-                          child: Text(
-                        'DIPAK',
-                        style: TextStyle(color: Colors.blue, fontSize: 15),
-                      ))
                     ]),
                   ),
                 ),

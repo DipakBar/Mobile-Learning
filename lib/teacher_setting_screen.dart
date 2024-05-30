@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+import 'package:flutter_application_2/TeacherSetting/teacher_change_password.dart';
+import 'package:flutter_application_2/TeacherSetting/teacher_email_change.dart';
+import 'package:flutter_application_2/TeacherSetting/teacher_mobileno_change.dart';
 import 'package:flutter_application_2/constractor/teacherDetails.dart';
 import 'package:flutter_application_2/controller/theme_controler.dart';
-
-import 'package:flutter_application_2/teacher_email_change.dart';
-import 'package:flutter_application_2/teacher_mobileno_change.dart';
+import 'package:flutter_application_2/teacher_home_page.dart';
 import 'package:get/get.dart';
 
 // ignore: must_be_immutable
@@ -20,96 +23,154 @@ class TeacherSettingScreen extends StatefulWidget {
 class _TeacherSettingScreenState extends State<TeacherSettingScreen> {
   TeacherDetails tdetails;
   _TeacherSettingScreenState(this.tdetails);
+  getData() {
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => TeacherHomeScreen(tdetails)));
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     ThemeController themeController = Get.put(ThemeController());
-    return Scaffold(
-      body: Container(
-        color: Colors.indigo,
-        height: height,
-        width: width,
-        child: Column(
+    return WillPopScope(
+      onWillPop: () => getData(),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Stack(
           children: [
-            Container(
-              decoration: const BoxDecoration(),
-              height: height * 0.25,
-              width: width,
+            Positioned(
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 70,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 35, left: 15, right: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Container(
+                    height: 250,
+                    decoration: const BoxDecoration(
+                      color: Colors.lightBlue,
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(150),
+                      ),
+                    ),
+                    child: Column(
                       children: [
-                        Text(
-                          'SELECT DEPARTMENT',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              if (themeController.isDark.value) {
-                                themeController.changeTheme('dark');
-                                themeController.isDark.value = false;
-                              } else {
-                                themeController.changeTheme('light');
-                                themeController.isDark.value = true;
-                              }
-                            });
-                          },
-                          icon: Obx(
-                            () => themeController.isDark.value
-                                ? const Icon(
-                                    Icons.light_mode,
-                                    color: Colors.white,
-                                  )
-                                : const Icon(
-                                    Icons.dark_mode,
-                                    color: Colors.white,
-                                  ),
+                        AppBar(
+                          backgroundColor: Colors.transparent,
+                          leading: InkWell(
+                            onTap: () {
+                              getData();
+                            },
+                            child: Icon(
+                              Icons.arrow_back_ios_new,
+                              color: Theme.of(context).colorScheme.background,
+                            ),
                           ),
-                        ),
+                          title: Text(
+                            'Settings',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                          ),
+                          actions: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (themeController.isDark.value) {
+                                    themeController.changeTheme('dark');
+                                    themeController.isDark.value = false;
+                                  } else {
+                                    themeController.changeTheme('light');
+                                    themeController.isDark.value = true;
+                                  }
+                                });
+                              },
+                              icon: Obx(
+                                () => themeController.isDark.value
+                                    ? const Icon(
+                                        Icons.light_mode,
+                                        color: Colors.white,
+                                      )
+                                    : const Icon(
+                                        Icons.dark_mode,
+                                        color: Colors.black,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   )
                 ],
               ),
             ),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30))),
-              height: height * 0.75,
-              width: width,
-              child: Column(
+            Padding(
+              padding: const EdgeInsets.only(top: 200),
+              child: GridView.count(
+                mainAxisSpacing: 20,
+                crossAxisCount: 2,
                 children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TeacherChangePassword(tdetails),
+                        ),
+                      );
+                    },
                     child: Container(
-                      height: height * 0.07,
+                      margin: const EdgeInsets.only(left: 20, right: 20),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                offset: const Offset(0, 5),
-                                color: Colors.blue.withOpacity(.5),
-                                spreadRadius: 2,
-                                blurRadius: 8)
-                          ]),
-                      child: ListTile(
-                        title: const Text("Change Password"),
-                        leading: Icon(Icons.key_sharp),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 20,
+                              spreadRadius: 0.5),
+                          BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 0,
+                              spreadRadius: 3.0)
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey,
+                                    blurRadius: 20,
+                                    spreadRadius: 0.5),
+                                BoxShadow(
+                                    color: Colors.white,
+                                    blurRadius: 0,
+                                    spreadRadius: 3.0)
+                              ],
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                Icons.lock,
+                                size: 50,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Change Password',
+                            style: TextStyle(color: Colors.black),
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -121,24 +182,59 @@ class _TeacherSettingScreenState extends State<TeacherSettingScreen> {
                               builder: ((context) =>
                                   TeacherEmailChange(tdetails))));
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: height * 0.07,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  offset: const Offset(0, 5),
-                                  color: Colors.blue.withOpacity(.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 8)
-                            ]),
-                        child: ListTile(
-                          title: const Text("Change Email"),
-                          leading: Icon(Icons.email),
-                        ),
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 20,
+                              spreadRadius: 0.5),
+                          BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 0,
+                              spreadRadius: 3.0)
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey,
+                                    blurRadius: 20,
+                                    spreadRadius: 0.5),
+                                BoxShadow(
+                                    color: Colors.white,
+                                    blurRadius: 0,
+                                    spreadRadius: 3.0)
+                              ],
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                Icons.email,
+                                size: 50,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Change Email',
+                            style: TextStyle(color: Colors.black),
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -150,44 +246,59 @@ class _TeacherSettingScreenState extends State<TeacherSettingScreen> {
                               builder: (context) =>
                                   TeacherMobileNumberChanage(tdetails)));
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: height * 0.07,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  offset: const Offset(0, 5),
-                                  color: Colors.blue.withOpacity(.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 8)
-                            ]),
-                        child: ListTile(
-                          title: const Text("Change Mobile no."),
-                          leading: Icon(Icons.phone_android),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      height: height * 0.07,
+                      margin: const EdgeInsets.only(left: 20, right: 20),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                offset: const Offset(0, 5),
-                                color: Colors.blue.withOpacity(.5),
-                                spreadRadius: 2,
-                                blurRadius: 8)
-                          ]),
-                      child: ListTile(
-                        title: const Text("Delete Account"),
-                        leading: Icon(Icons.account_box),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 20,
+                              spreadRadius: 0.5),
+                          BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 0,
+                              spreadRadius: 3.0)
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey,
+                                    blurRadius: 20,
+                                    spreadRadius: 0.5),
+                                BoxShadow(
+                                    color: Colors.white,
+                                    blurRadius: 0,
+                                    spreadRadius: 3.0)
+                              ],
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                Icons.phone,
+                                size: 50,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Change Phone no.',
+                            style: TextStyle(color: Colors.black),
+                          )
+                        ],
                       ),
                     ),
                   ),

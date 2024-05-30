@@ -238,11 +238,15 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
                                 AutovalidateMode.onUserInteraction,
                             controller: email,
                             validator: (value) {
-                              if (email.text.isEmpty) {
-                                return 'Enter Your email';
+                              if (value!.isEmpty) {
+                                return "Email Id is required";
+                              } else if (!RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{3,4}$')
+                                  .hasMatch(value)) {
+                                return "Please enter valid email";
+                              } else {
+                                return null;
                               }
-
-                              return null;
                             },
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
@@ -281,10 +285,17 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
                                 AutovalidateMode.onUserInteraction,
                             controller: password,
                             validator: (value) {
-                              if (password.text.isEmpty) {
-                                return 'Enter Your password';
+                              if (value!.isEmpty) {
+                                return "password is required";
+                              } else if (value.length < 6) {
+                                return ("Password Must be more than 5 characters");
+                              } else if (!RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                  .hasMatch(value)) {
+                                return ("Password should contain upper,lower,digit and Special character ");
+                              } else {
+                                return null;
                               }
-                              return null;
                             },
                             obscureText: obs,
                             decoration: InputDecoration(
@@ -347,10 +358,14 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
                             controller: mobile,
                             keyboardType: TextInputType.phone,
                             validator: (value) {
-                              if (mobile.text.isEmpty) {
-                                return 'Enter Your mobile no.';
+                              if (value!.isEmpty) {
+                                return "mobile no. is required";
+                              } else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)')
+                                  .hasMatch(value)) {
+                                return "Please enter valid mobile no.";
+                              } else {
+                                return null;
                               }
-                              return null;
                             },
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -440,14 +455,14 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20)),
                           child: Center(
                             child: Text(
                               "Register",
                               style: TextStyle(
                                   color:
-                                      Theme.of(context).colorScheme.background,
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontStyle: FontStyle.italic),
                             ),
                           ),

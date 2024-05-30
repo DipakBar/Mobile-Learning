@@ -4,3 +4,10 @@ class StudentEmail {
     email = e;
   }
 }
+
+class TeacherEmail {
+  static String email = '';
+  TeacherEmail(e) {
+    email = e;
+  }
+}

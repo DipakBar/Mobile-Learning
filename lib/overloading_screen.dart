@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/intro_screens/intro_page_1.dart';
 import 'package:flutter_application_2/intro_screens/intro_page_2.dart';
 import 'package:flutter_application_2/intro_screens/intro_page_3.dart';
 import 'package:flutter_application_2/select_manu.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -16,35 +20,51 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   PageController controller = PageController();
   bool onLastPage = false;
-  // late StreamSubscription subscription;
-  // var isDeviceConnected = false;
-  // bool isAlertSet = false;
+  late StreamSubscription subscription;
+  var isDeviceConnected = false;
+  bool isAlertSet = false;
 
-  // @override
-  // void initState() {
-  //   getConnectivity();
-  //   // TODO: implement initState
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    getConnectivity();
+    _checkInternetConnection();
+    // TODO: implement initState
+    super.initState();
+  }
 
-  // getConnectivity() => subscription = Connectivity()
-  //         .onConnectivityChanged
-  //         .listen((ConnectivityResult result) async {
-  //       isDeviceConnected = await InternetConnectionChecker().hasConnection;
-  //       if (!isDeviceConnected && isAlertSet == false) {
-  //         showDiaLogBox();
-  //         setState(() {
-  //           isAlertSet = true;
-  //         });
-  //       }
-  //     });
+  Future<void> _checkInternetConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        showDiaLogBox();
+        setState(() {
+          isAlertSet = true;
+        });
+      });
+    } else {
+      setState(() {});
+    }
+  }
 
-  // @override
-  // void dispose() {
-  //   subscription.cancel();
-  //   // TODO: implement dispose
-  //   super.dispose();
-  // }
+  getConnectivity() => subscription = Connectivity()
+          .onConnectivityChanged
+          .listen((ConnectivityResult result) async {
+        isDeviceConnected = await InternetConnectionChecker().hasConnection;
+
+        if (!isDeviceConnected && isAlertSet == false) {
+          showDiaLogBox();
+          setState(() {
+            isAlertSet = true;
+          });
+        }
+      });
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +95,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       },
                       child: const Text(
                         'skip',
-                        style: TextStyle(fontStyle: FontStyle.italic),
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic, color: Colors.white),
                       )),
-                  SmoothPageIndicator(controller: controller, count: 3),
+                  SmoothPageIndicator(
+                      effect: const ColorTransitionEffect(
+                          paintStyle: PaintingStyle.stroke,
+                          dotColor: Colors.black,
+                          activeDotColor: Colors.white),
+                      controller: controller,
+                      count: 3),
                   onLastPage
                       ? GestureDetector(
                           onTap: () {
@@ -86,16 +113,20 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => SelectManu()));
                           },
-                          child: Text('done',
-                              style: TextStyle(fontStyle: FontStyle.italic)))
+                          child: const Text('done',
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.white)))
                       : GestureDetector(
                           onTap: () {
                             controller.nextPage(
                                 duration: Duration(microseconds: 500),
                                 curve: Curves.easeIn);
                           },
-                          child: Text('next',
-                              style: TextStyle(fontStyle: FontStyle.italic))),
+                          child: const Text('next',
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.white))),
                 ],
               ))
         ],
@@ -103,28 +134,28 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  // showDiaLogBox() => showCupertinoDialog<String>(
-  //     context: context,
-  //     builder: (BuildContext context) => CupertinoAlertDialog(
-  //           title: const Text('No Connection'),
-  //           content: const Text('Please check your internet connection'),
-  //           actions: [
-  //             TextButton(
-  //                 onPressed: () async {
-  //                   Navigator.pop(context, 'Cancel');
-  //                   setState(() {
-  //                     isAlertSet = false;
-  //                   });
-  //                   isDeviceConnected =
-  //                       await InternetConnectionChecker().hasConnection;
-  //                   if (!isDeviceConnected) {
-  //                     showDiaLogBox();
-  //                     setState(() {
-  //                       isAlertSet = true;
-  //                     });
-  //                   }
-  //                 },
-  //                 child: Text('ok')),
-  //           ],
-  //         ));
+  showDiaLogBox() => showCupertinoDialog<String>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+            title: const Text('No Connection'),
+            content: const Text('Please check your internet connection'),
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context, 'Cancel');
+                    setState(() {
+                      isAlertSet = false;
+                    });
+                    isDeviceConnected =
+                        await InternetConnectionChecker().hasConnection;
+                    if (!isDeviceConnected) {
+                      showDiaLogBox();
+                      setState(() {
+                        isAlertSet = true;
+                      });
+                    }
+                  },
+                  child: Text('ok')),
+            ],
+          ));
 }

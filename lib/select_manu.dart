@@ -101,13 +101,13 @@ class _SelectManuState extends State<SelectManu> {
                         MaterialPageRoute(
                             builder: (context) => const TeacherLoginScreen()));
                   },
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50)),
-                  child: const Text(
+                  child: Text(
                     "Teacher",
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 18,
                       fontStyle: FontStyle.normal,
                     ),
@@ -123,13 +123,13 @@ class _SelectManuState extends State<SelectManu> {
                         MaterialPageRoute(
                             builder: (context) => StudentLoginScreen()));
                   },
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50)),
-                  child: const Text(
+                  child: Text(
                     "Student",
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 18,
                       fontStyle: FontStyle.normal,
                     ),
@@ -141,77 +141,6 @@ class _SelectManuState extends State<SelectManu> {
         ),
       ),
     );
-
-    //           Padding(
-    //             padding: const EdgeInsets.only(bottom: 15),
-    //             child: Column(
-    //               mainAxisAlignment: MainAxisAlignment.end,
-    //               crossAxisAlignment: CrossAxisAlignment.center,
-    //               children: [
-    //                 InkWell(
-    //                   onTap: () {
-    //                     Navigator.push(
-    //                         context,
-    //                         MaterialPageRoute(
-    //                             builder: (context) =>
-    //                                 const TeacherLoginScreen()));
-    //                   },
-    //                   child: Padding(
-    //                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
-    //                     child: Container(
-    //                       padding: const EdgeInsets.all(25),
-    //                       decoration: BoxDecoration(
-    //                           color: Theme.of(context).colorScheme.onBackground,
-    //                           borderRadius: BorderRadius.circular(20)),
-    //                       child: Center(
-    //                         child: Text(
-    //                           "Teacher",
-    //                           style: TextStyle(
-    //                               color:
-    //                                   Theme.of(context).colorScheme.background,
-    //                               fontStyle: FontStyle.italic),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 ),
-    //                 const SizedBox(
-    //                   height: 10,
-    //                 ),
-    //                 InkWell(
-    //                   onTap: () {
-    //                     Navigator.push(
-    //                         context,
-    //                         MaterialPageRoute(
-    //                             builder: (context) => StudentLoginScreen()));
-    //                   },
-    //                   child: Padding(
-    //                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
-    //                     child: Container(
-    //                       padding: const EdgeInsets.all(25),
-    //                       decoration: BoxDecoration(
-    //                           color: Theme.of(context).colorScheme.onBackground,
-    //                           borderRadius: BorderRadius.circular(20)),
-    //                       child: Center(
-    //                         child: Text(
-    //                           "Student",
-    //                           style: TextStyle(
-    //                               color:
-    //                                   Theme.of(context).colorScheme.background,
-    //                               fontStyle: FontStyle.italic),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           )
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 
   showDiaLogBox() => showCupertinoDialog<String>(

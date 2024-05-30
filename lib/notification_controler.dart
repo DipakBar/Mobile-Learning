@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 class NotificationController {
@@ -19,5 +21,9 @@ class NotificationController {
   /// Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
-      ReceivedAction receivedAction) async {}
+      ReceivedAction receivedAction) async {
+    if (receivedAction.buttonKeyPressed == 'tbib_downloader_open_file') {
+    } else if (receivedAction.buttonKeyPressed ==
+        'tbib_downloader_delete_file') {}
+  }
 }

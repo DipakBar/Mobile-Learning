@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/StudentForgetPassword/student_forget_password.dart';
 import 'package:flutter_application_2/constractor/studentdetails.dart';
 import 'package:flutter_application_2/loadingpage.dart';
 import 'package:flutter_application_2/student_department_page.dart';
-import 'package:flutter_application_2/student_forget_password.dart';
+
 import 'package:flutter_application_2/student_register.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -44,7 +47,6 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       var responded = await http.Response.fromStream(response);
       var jsondata = jsonDecode(responded.body);
       if (jsondata['status'] == true) {
-        // print('object');
         var datafetch = StudentDetails(
           jsondata['id'].toString(),
           jsondata['name'].toString(),
@@ -94,7 +96,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       }
     } catch (e) {
       print(e);
-      // Navigator.of(context).pop();
+      Navigator.pop(context);
       Fluttertoast.showToast(
         gravity: ToastGravity.CENTER,
         msg: e.toString(),
@@ -123,7 +125,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Theme.of(context).colorScheme.background,
           body: SafeArea(
               child: Center(
             child: SingleChildScrollView(
@@ -132,10 +134,12 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 key: formkey,
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'LOGIN !!',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 24),
                     ),
                     LottieBuilder.asset(
                       'animations/Animation - 1707122158971.json',
@@ -148,26 +152,40 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: TextFormField(
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.background,
+                          ),
+                          cursorColor: Theme.of(context).colorScheme.background,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: email,
                           validator: (value) {
-                            if (email.text.isEmpty) {
-                              return 'enter your email ';
+                            if (value!.isEmpty) {
+                              return "Email Id is required";
+                            } else if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{3,4}$')
+                                .hasMatch(value)) {
+                              return "Please enter valid email";
+                            } else {
+                              return null;
                             }
-
-                            return null;
                           },
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                               errorStyle: TextStyle(color: Colors.red),
-                              prefixIcon: Icon(Icons.email_rounded),
+                              prefixIcon: Icon(
+                                Icons.email_rounded,
+                                color: Theme.of(context).colorScheme.background,
+                              ),
                               border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.background,
+                              ),
                               hintText: 'Email'),
                         ),
                       ),
@@ -179,12 +197,15 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: TextFormField(
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.background,
+                          ),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: password,
                           validator: (value) {
@@ -197,7 +218,10 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           obscureText: obs,
                           decoration: InputDecoration(
                               errorStyle: TextStyle(color: Colors.red),
-                              prefixIcon: Icon(Icons.lock),
+                              prefixIcon: Icon(
+                                Icons.lock,
+                                color: Theme.of(context).colorScheme.background,
+                              ),
                               suffixIcon: GestureDetector(
                                   onTap: () {
                                     obs
@@ -209,9 +233,22 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                           });
                                   },
                                   child: obs
-                                      ? const Icon(Icons.visibility_off)
-                                      : const Icon(Icons.visibility)),
+                                      ? Icon(
+                                          Icons.visibility_off,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        )
+                                      : Icon(
+                                          Icons.visibility,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                        )),
                               border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.background,
+                              ),
                               hintText: 'Password'),
                         ),
                       ),
@@ -223,7 +260,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                             MaterialPageRoute(
                                 builder: (context) => StudentForgetPassword()));
                       },
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.only(right: 29),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -231,7 +268,13 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                             SizedBox(
                               width: 10,
                             ),
-                            Text('Forget password')
+                            Text(
+                              'Forget password',
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -251,13 +294,14 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                              color: Colors.deepPurple,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20)),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               "Login",
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontStyle: FontStyle.italic),
                             ),
                           ),
@@ -271,7 +315,12 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 60.0),
                       child: Row(
                         children: [
-                          const Text('Not a member ?'),
+                          Text(
+                            'Not a member ?',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -283,9 +332,13 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                       builder: (context) =>
                                           const StudentRegisterScreen()));
                             },
-                            child: const Text(
+                            child: Text(
                               'Register now',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
                             ),
                           )
                         ],

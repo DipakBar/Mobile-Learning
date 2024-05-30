@@ -51,8 +51,6 @@ class _SplashScreenState extends State<SplashScreen> {
     tpass = sp.getString('tpass') ?? "";
     timage = sp.getString('timage') ?? "";
     tmobile = sp.getString('tmobile') ?? "";
-    // print(sroll);
-    print(temail);
   }
 
   @override
@@ -98,13 +96,13 @@ class _SplashScreenState extends State<SplashScreen> {
               ],
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: Center(
               child: Text(
                 "Developed By Dipak",
                 style: TextStyle(
-                    color: Colors.lightBlue,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 15,
                     fontWeight: FontWeight.normal,
                     fontStyle: FontStyle.italic),

@@ -98,7 +98,7 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Theme.of(context).colorScheme.background,
           body: SafeArea(
               child: Center(
             child: SingleChildScrollView(
@@ -110,14 +110,18 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                     const SizedBox(
                       height: 50,
                     ),
-                    const Icon(
+                    Icon(
                       Icons.app_registration_outlined,
                       size: 100,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
-                    const Text(
+                    Text(
                       'REGISTER HERE !!',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
                     const SizedBox(
                       height: 30,
@@ -126,14 +130,19 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           child: TextFormField(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            cursorColor:
+                                Theme.of(context).colorScheme.background,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: name,
@@ -144,8 +153,16 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
 
                               return null;
                             },
-                            decoration: const InputDecoration(
-                                border: InputBorder.none, hintText: 'Name'),
+                            decoration: InputDecoration(
+                                errorStyle: TextStyle(color: Colors.red),
+                                focusColor:
+                                    Theme.of(context).colorScheme.background,
+                                hintStyle: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ),
+                                border: InputBorder.none,
+                                hintText: 'Name'),
                           ),
                         ),
                       ),
@@ -157,27 +174,42 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           child: TextFormField(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            cursorColor:
+                                Theme.of(context).colorScheme.background,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: email,
                             validator: (value) {
-                              if (email.text.isEmpty) {
-                                return 'Enter Your email';
+                              if (value!.isEmpty) {
+                                return "Email Id is required";
+                              } else if (!RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{3,4}$')
+                                  .hasMatch(value)) {
+                                return "Please enter valid email";
+                              } else {
+                                return null;
                               }
-
-                              return null;
                             },
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                                border: InputBorder.none, hintText: 'Email'),
+                            decoration: InputDecoration(
+                                errorStyle: TextStyle(color: Colors.red),
+                                hintStyle: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ),
+                                border: InputBorder.none,
+                                hintText: 'Email'),
                           ),
                         ),
                       ),
@@ -189,23 +221,34 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           child: TextFormField(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            cursorColor:
+                                Theme.of(context).colorScheme.background,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: password,
                             validator: (value) {
-                              if (password.text.isEmpty) {
-                                return 'Enter Your password';
+                              if (value!.isEmpty) {
+                                return "password is required";
+                              } else if (value.length < 6) {
+                                return ("Password Must be more than 6 characters");
+                              } else if (!RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                  .hasMatch(value)) {
+                                return ("Password should contain upper,lower,digit and Special character ");
+                              } else {
+                                return null;
                               }
-
-                              return null;
                             },
                             obscureText: obs,
                             decoration: InputDecoration(
@@ -220,9 +263,24 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                                             });
                                     },
                                     child: obs
-                                        ? const Icon(Icons.visibility_off)
-                                        : const Icon(Icons.visibility)),
+                                        ? Icon(
+                                            Icons.visibility_off,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                          )
+                                        : Icon(
+                                            Icons.visibility,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                          )),
                                 border: InputBorder.none,
+                                errorStyle: TextStyle(color: Colors.red),
+                                hintStyle: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ),
                                 hintText: 'Password'),
                           ),
                         ),
@@ -235,25 +293,39 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: Theme.of(context).colorScheme.onBackground,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                             borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           child: TextFormField(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            cursorColor:
+                                Theme.of(context).colorScheme.background,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: mobile,
                             keyboardType: TextInputType.phone,
                             validator: (value) {
-                              if (mobile.text.isEmpty) {
-                                return 'Enter Your mobile no.';
+                              if (value!.isEmpty) {
+                                return "mobile no. is required";
+                              } else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)')
+                                  .hasMatch(value)) {
+                                return "Please enter valid mobile no.";
+                              } else {
+                                return null;
                               }
-                              return null;
                             },
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
+                                errorStyle: TextStyle(color: Colors.red),
+                                hintStyle: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ),
                                 border: InputBorder.none,
                                 hintText: 'Mobile no.'),
                           ),
@@ -275,13 +347,14 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                              color: Colors.deepPurple,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(20)),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               "Register",
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontStyle: FontStyle.italic),
                             ),
                           ),

@@ -1,16 +1,19 @@
-// ignore_for_file: must_be_immutable, use_build_context_synchronously
+// ignore_for_file: must_be_immutable, use_build_context_synchronously, prefer_const_constructors
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_2/constractor/studentdetails.dart';
 
 import 'package:flutter_application_2/loadingpage.dart';
 import 'package:flutter_application_2/student_department_page.dart';
+
 import 'package:flutter_application_2/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -43,14 +46,19 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
         content: Container(
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
           height: 180,
           child: Column(
             children: [
-              const Text(
+              Text(
                 "Pic Image From",
-                style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
               TextButton.icon(
                 onPressed: () {
@@ -59,13 +67,15 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                     UpdateImage(pickedImage!, details.email);
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.camera,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
-                label: const Text(
+                label: Text(
                   "CAMERA",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
               TextButton.icon(
@@ -75,26 +85,30 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                     UpdateImage(pickedImage!, details.email);
                   });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.image,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
-                label: const Text(
+                label: Text(
                   "GALLERY",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                 ),
               ),
               TextButton.icon(
                 onPressed: () {
                   Get.back();
                 },
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.black,
+                icon: Icon(
+                  Icons.cancel,
+                  color: Theme.of(context).colorScheme.onError,
                 ),
-                label: const Text(
+                label: Text(
                   "CANCEL",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
                 ),
               ),
             ],
@@ -281,13 +295,106 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
             builder: (context) => StudentDepartmentScreen(details)));
   }
 
+  Widget imageShow(String image) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  maxRadius: 150,
+                  child: ClipOval(
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                      color: Colors.grey[200], // Placeholder background color
+                    ),
+                  ),
+                ),
+                Positioned(
+                  child: CircularProgressIndicator(),
+                ),
+                CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  maxRadius: 150,
+                  foregroundImage: NetworkImage(
+                    MyUrl.fullurl + MyUrl.Studentimageurl + image,
+                  ),
+                  onForegroundImageError: (exception, stackTrace) {
+                    // Handle error here if needed
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget imageShow(image) {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       Navigator.pop(context);
+  //       Navigator.pop(context);
+  //     },
+  //     child: BackdropFilter(
+  //       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+  //       child: Container(
+  //         color: Colors.transparent,
+  //         child: Center(
+  //           child: CircleAvatar(
+  //               backgroundColor: Colors.transparent,
+  //               maxRadius: 150,
+  //               foregroundImage: NetworkImage(
+  //                 MyUrl.fullurl + MyUrl.Studentimageurl + image,
+  //               )),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget defalut() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+          child: const Center(
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              maxRadius: 150,
+              foregroundImage: AssetImage(
+                "assets/images/default.png",
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () => getData(),
       child: Scaffold(
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.lightBlue,
         body: SafeArea(
           child: Column(
             children: [
@@ -300,16 +407,18 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: Theme.of(context).colorScheme.background,
                       )),
                   Container(
                     height: 60,
                     child: Center(
                         child: Text(
-                      'PROFILE  INFO',
+                      'Profile',
                       style: TextStyle(
-                        fontSize: 25,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.4,
+                        color: Theme.of(context).colorScheme.background,
                       ),
                     )),
                   ),
@@ -326,7 +435,7 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(45),
                         topRight: Radius.circular(45)),
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.background,
                   ),
                   child: Container(
                     padding: const EdgeInsets.only(left: 15, top: 5, right: 15),
@@ -343,12 +452,10 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                                 ),
                               ),
                               child: pickedImage != null
-                                  ? ClipOval(
-                                      child: Image.file(
+                                  ? CircleAvatar(
+                                      radius: 80,
+                                      backgroundImage: FileImage(
                                         pickedImage!,
-                                        height: 150,
-                                        width: 160,
-                                        fit: BoxFit.cover,
                                       ),
                                     )
                                   : details.image == 'no image'
@@ -362,16 +469,18 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                                           ),
                                         )
                                       : CachedNetworkImage(
+                                          height: 150,
+                                          width: 150,
                                           imageUrl: MyUrl.fullurl +
                                               MyUrl.Studentimageurl +
                                               details.image,
                                           imageBuilder:
                                               (context, imageProvider) =>
-                                                  ClipOval(
-                                            child: Image(
-                                              image: imageProvider,
-                                              height: 150,
-                                              width: 150,
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: imageProvider),
                                             ),
                                           ),
                                           placeholder: (context, url) =>
@@ -390,53 +499,87 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                                   child: IconButton(
                                     onPressed: () {
                                       showModalBottomSheet(
-                                          context: context,
-                                          builder: ((context) {
-                                            return Container(
-                                              height: 150,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      TextButton(
-                                                          onPressed: () {},
-                                                          child: const Text(
-                                                            "Wiew profile image",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic),
-                                                          )),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      TextButton(
-                                                          onPressed:
-                                                              imagePickerOption,
-                                                          child: const Text(
-                                                            "Edit profile image",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic),
-                                                          ))
-                                                    ],
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                        context: context,
+                                        builder: ((context) {
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: ListTile(
+                                                  leading: Icon(
+                                                    Icons.cancel,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onError,
                                                   ),
-                                                ],
+                                                  title: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onError),
+                                                  ),
+                                                ),
                                               ),
-                                            );
-                                          }));
+                                              InkWell(
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return details.image ==
+                                                                'no image'
+                                                            ? defalut()
+                                                            : imageShow(
+                                                                details.image);
+                                                      });
+                                                },
+                                                child: ListTile(
+                                                  leading: Icon(
+                                                    Icons.person,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                  ),
+                                                  title: Text(
+                                                    'See profile picture',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onBackground),
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: imagePickerOption,
+                                                child: ListTile(
+                                                  leading: Icon(
+                                                    Icons.image_sharp,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                  ),
+                                                  title: Text(
+                                                    'Choose profile picture',
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onBackground,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }),
+                                      );
                                     },
                                     icon: const Icon(
                                       Icons.add_a_photo,
@@ -467,7 +610,7 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                             ]),
                         child: ListTile(
                           title: Text(
-                            "name",
+                            "Name",
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
@@ -490,13 +633,28 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                                   builder: (context) {
                                     return Container(
                                       child: AlertDialog(
-                                        title: const Text("Enter your name"),
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .background,
+                                        title: Text(
+                                          "Enter your name",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                          ),
+                                        ),
                                         content: Form(
                                           key: namekey,
                                           child: TextFormField(
                                             autovalidateMode: AutovalidateMode
                                                 .onUserInteraction,
                                             controller: name,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                            ),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return 'please enter name';
@@ -505,7 +663,26 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                                               }
                                               return null;
                                             },
-                                            decoration: const InputDecoration(),
+                                            decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  borderSide: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  borderSide: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground,
+                                                  ),
+                                                )),
                                           ),
                                         ),
                                         actions: [
@@ -656,14 +833,15 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                  offset: const Offset(0, 5),
-                                  color: Colors.blue.withOpacity(.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 8)
+                                offset: const Offset(0, 5),
+                                color: Colors.blue.withOpacity(.5),
+                                spreadRadius: 2,
+                                blurRadius: 8,
+                              )
                             ]),
                         child: ListTile(
                           leading: Icon(
-                            Icons.phone_android,
+                            Icons.school,
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
                           title: Text(
@@ -680,14 +858,6 @@ class _StudentDeshboardState extends State<StudentDeshboard> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Center(
-                          child: Text(
-                        'DIPAK',
-                        style: TextStyle(color: Colors.blue, fontSize: 15),
-                      ))
                     ]),
                   ),
                 ),

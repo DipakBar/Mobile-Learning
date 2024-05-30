@@ -1,8 +1,10 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/Splashscreen.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_application_2/controller/theme_controler.dart';
-import 'package:get/get.dart';
+
+import 'StudentForgetPassword/student_forget_password.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +34,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-// ignore: must_be_immutable
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 

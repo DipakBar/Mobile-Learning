@@ -6,7 +6,10 @@ import 'package:flutter_application_2/screen/student_subject_question_paper.dart
 import 'package:flutter_application_2/screen/student_subject_topic_video.dart';
 
 class StudentBottomNavigationBar extends StatefulWidget {
-  const StudentBottomNavigationBar({super.key});
+  final String semester;
+  final String subject_code;
+  StudentBottomNavigationBar(
+      {required this.semester, required this.subject_code});
 
   @override
   State<StudentBottomNavigationBar> createState() =>
@@ -16,16 +19,32 @@ class StudentBottomNavigationBar extends StatefulWidget {
 class _StudentBottomNavigationBarState
     extends State<StudentBottomNavigationBar> {
   PageController pageController = PageController();
+  late String semester;
+  late String subject_code;
   int selectedIndex = 0;
-  List<Widget> screens = [
-    const StudentSubjectPDF(),
-    const StudentSubjectQuestionPaper(),
-    const StudentSubjectTopicVideo()
-  ];
+  List<Widget> screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.semester != null) {
+      semester = widget.semester;
+      subject_code = widget.subject_code;
+      screens = [
+        StudentSubjectPDF(semester: semester, subject_code: subject_code),
+        StudentSubjectQuestionPaper(
+            semester: semester, subject_code: subject_code),
+        StudentSubjectTopicVideo(semester: semester, subject_code: subject_code)
+      ];
+    }
+  }
+
   void onPageChanged(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
+    if (mounted) {
+      setState(() {
+        selectedIndex = index;
+      });
+    }
   }
 
   void onItemTapped(int i) {
@@ -33,40 +52,62 @@ class _StudentBottomNavigationBarState
   }
 
   @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: PageView(
-        controller: pageController,
-        // ignore: sort_child_properties_last
-        children: screens,
-        onPageChanged: onPageChanged,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: PageView(
+          controller: pageController,
+          children: screens,
+          onPageChanged: onPageChanged,
+        ),
+        bottomNavigationBar: CurvedNavigationBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          buttonBackgroundColor: Theme.of(context).colorScheme.onBackground,
+          animationDuration: const Duration(milliseconds: 300),
+          color: Colors.lightBlue,
+          items: [
+            CurvedNavigationBarItem(
+              child: Icon(
+                Icons.file_copy_sharp,
+                color: Theme.of(context).colorScheme.background,
+              ),
+              label: 'PDF',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.background,
+              ),
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(
+                Icons.book_rounded,
+                color: Theme.of(context).colorScheme.background,
+              ),
+              label: 'Question Paper',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.background,
+              ),
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(
+                Icons.video_collection_sharp,
+                color: Theme.of(context).colorScheme.background,
+              ),
+              label: 'Video',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.background,
+              ),
+            ),
+          ],
+          index: selectedIndex,
+          onTap: onItemTapped,
+        ),
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.green,
-        animationDuration: const Duration(milliseconds: 300),
-        color: Colors.black,
-        items: const [
-          CurvedNavigationBarItem(
-            child: Icon(Icons.file_copy_sharp, color: Colors.white),
-            label: 'PDF',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.book_rounded, color: Colors.white),
-            label: 'Question Paper',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.video_collection_sharp, color: Colors.white),
-            label: 'Video',
-            labelStyle: TextStyle(color: Colors.white),
-          ),
-        ],
-        index: selectedIndex,
-        onTap: onItemTapped,
-      ),
-    ));
+    );
   }
 }
